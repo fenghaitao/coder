@@ -2,7 +2,7 @@
 FROM ubuntu:24.04
 
 # Define username as a build argument and environment variable
-ARG USERNAME=hfeng1
+ARG USERNAME=ubuntu
 ENV USERNAME=${USERNAME}
 
 # Set environment variables to non-interactive
@@ -102,8 +102,25 @@ RUN code-server --install-extension /tmp/vsix/github.copilot-1.325.0.vsix \
  && code-server --install-extension /tmp/vsix/ms-vscode.cpptools-extension-pack-1.3.1.vsix \
  && rm -rf /tmp/vsix
 
+# Install nvm (Node Version Manager)
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+    && echo 'export NVM_DIR="$HOME/.nvm"' >> /home/${USERNAME}/.bashrc \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/${USERNAME}/.bashrc \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use' >> /home/${USERNAME}/.profile \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.nvm /home/${USERNAME}/.bashrc /home/${USERNAME}/.profile
+
+# Install Node.js using nvm
+RUN bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install node' \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.nvm
+
+# Install uv (Python package manager)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
+    && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> /home/${USERNAME}/.bashrc \
+    && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> /home/${USERNAME}/.profile \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.cargo
+
 USER 1001
 ENV USER=${USERNAME}
-WORKDIR /nfs/site/home/${USERNAME}/coder
+WORKDIR /home/ubuntu
 
-ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "."]
+ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "--auth", "none", "."]
