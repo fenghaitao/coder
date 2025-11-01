@@ -4,8 +4,8 @@
 # Usage: ./run_coder_singularity.sh [new_home_path]
 #        If no path provided, defaults to /nfs/site/home/$(whoami)
 
-SINGULARITY_IMAGE="coder.sif"
-DEFAULT_HOME="/nfs/site/home/$(whoami)"
+SINGULARITY_IMAGE="../coder.sif"
+DEFAULT_HOME="/nfs/site/home/$(whoami)/coder"
 NEW_HOME="${1:-$DEFAULT_HOME}"
 
 echo "Running Singularity container with HOME=$NEW_HOME"
@@ -23,7 +23,7 @@ fi
 singularity run \
     --home "$NEW_HOME" \
     --bind /nfs:/nfs \
-    --bind /usr:/usr \
+    --bind /usr/intel:/usr/intel \
     --bind /etc:/etc \
     --bind /var/tmp:/var/tmp \
     --bind /tmp:/tmp \
