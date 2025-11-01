@@ -17,10 +17,15 @@ if [ ! -f "$SINGULARITY_IMAGE" ]; then
     exit 1
 fi
 
-# Run Singularity with HOME environment reset
+# Run Singularity container with custom HOME directory
+# Use --home to set the HOME directory inside the container
+# Mount necessary system directories for proper functionality
 singularity run \
-    --env HOME="$NEW_HOME" \
+    --home "$NEW_HOME" \
     --bind /nfs:/nfs \
-    --bind /usr/intel:/usr/intel \
-    --bind "$NEW_HOME":"$NEW_HOME" \
+    --bind /usr:/usr \
+    --bind /etc:/etc \
+    --bind /var/tmp:/var/tmp \
+    --bind /tmp:/tmp \
+    --bind /opt:/opt \
     "$SINGULARITY_IMAGE"
