@@ -57,6 +57,7 @@ RUN apt-get update && \
         gnumeric \
         xsltproc \
         libstring-crc32-perl \
+        lsof \
         && update-ca-certificates \
         && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 60 \
         && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 60
