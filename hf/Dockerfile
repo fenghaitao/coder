@@ -110,24 +110,23 @@ RUN git clone https://github.com/fenghaitao/coder.git /tmp/coder \
 
 # Install nvm (Node Version Manager)
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
-    && echo 'export NVM_DIR="$HOME/.nvm"' >> /home/${USERNAME}/.bashrc \
-    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/${USERNAME}/.bashrc \
-    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use' >> /home/${USERNAME}/.profile \
-    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.nvm /home/${USERNAME}/.bashrc /home/${USERNAME}/.profile
+    && echo 'export NVM_DIR="$HOME/.nvm"' >> $HOME/.bashrc \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $HOME/.bashrc \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use' >> $HOME/.profile \
+    && chown -R ${USERNAME}:${USERNAME} $HOME/.nvm $HOME/.bashrc $HOME/.profile
 
 # Install Node.js using nvm
 RUN bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install node' \
-    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.nvm
+    && chown -R ${USERNAME}:${USERNAME} $HOME/.nvm
 
 # Install uv (Python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
-    && echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/${USERNAME}/.bashrc \
-    && echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/${USERNAME}/.profile \
-    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local
+    && echo 'export PATH="$HOME/.local/bin:$PATH"' >> $HOME/.bashrc \
+    && echo 'export PATH="$HOME/.local/bin:$PATH"' >> $HOME/.profile \
+    && chown -R ${USERNAME}:${USERNAME} $HOME/.local
 
 # Install Atlassian CLI (acli)
 RUN curl -LO "https://acli.atlassian.com/linux/latest/acli_linux_amd64/acli" \
     && chmod +x acli
-
 
 ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
