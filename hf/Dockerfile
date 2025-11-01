@@ -1,8 +1,8 @@
 # Use Ubuntu 24.04 as the base image
 FROM ubuntu:24.04
 
-# Define username as a build argument and environment variable
-ARG USERNAME=coder
+# Use the existing ubuntu user
+ARG USERNAME=ubuntu
 ENV USERNAME=${USERNAME}
 
 # Set environment variables to non-interactive
@@ -70,9 +70,10 @@ RUN python3 -m pip install wheel requests setuptools-rust setuptools --break-sys
 # Set Python 3 as default python
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
-#grant root permission to user
-RUN adduser --gecos '' --disabled-password ${USERNAME} && \
-  echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
+#grant root permission to existing ubuntu user
+# RUN adduser --gecos '' --disabled-password ${USERNAME} && \
+#   echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
+RUN echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
 
 RUN ARCH="$(dpkg --print-architecture)" && \
     curl -fsSL "https://github.com/boxboat/fixuid/releases/download/v0.5/fixuid-0.5-linux-$ARCH.tar.gz" | tar -C /usr/local/bin -xzf - && \
@@ -95,7 +96,7 @@ EXPOSE 7860
 
 USER 1001
 ENV USER=${USERNAME}
-WORKDIR /home/coder
+WORKDIR /home/ubuntu
 
 # Clone the coder repository and install extensions
 RUN git clone https://github.com/fenghaitao/coder.git /tmp/coder \
