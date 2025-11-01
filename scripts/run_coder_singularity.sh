@@ -4,7 +4,7 @@
 # Usage: ./run_coder_singularity.sh [new_home_path]
 #        If no path provided, defaults to /nfs/site/home/$(whoami)
 
-SINGULARITY_IMAGE="../coder.sif"
+SINGULARITY_IMAGE="./coder.sif"
 DEFAULT_HOME="/nfs/site/home/$(whoami)/coder"
 NEW_HOME="${1:-$DEFAULT_HOME}"
 
