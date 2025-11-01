@@ -75,17 +75,16 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python
 #   echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
 RUN echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
 
-RUN ARCH="$(dpkg --print-architecture)" && \
-    curl -fsSL "https://github.com/boxboat/fixuid/releases/download/v0.5/fixuid-0.5-linux-$ARCH.tar.gz" | tar -C /usr/local/bin -xzf - && \
-    chown root:root /usr/local/bin/fixuid && \
-    chmod 4755 /usr/local/bin/fixuid && \
-    mkdir -p /etc/fixuid && \
-    printf "user: ${USERNAME}\ngroup: ${USERNAME}\n" > /etc/fixuid/config.yml
+# fixuid removed - not needed since we're running as USER 1000 (ubuntu user)
+# RUN ARCH="$(dpkg --print-architecture)" && \
+#     curl -fsSL "https://github.com/boxboat/fixuid/releases/download/v0.5/fixuid-0.5-linux-$ARCH.tar.gz" | tar -C /usr/local/bin -xzf - && \
+#     chown root:root /usr/local/bin/fixuid && \
+#     chmod 4755 /usr/local/bin/fixuid && \
+#     mkdir -p /etc/fixuid && \
+#     printf "user: ${USERNAME}\ngroup: ${USERNAME}\n" > /etc/fixuid/config.yml
 
 #install code-server
-RUN wget -O /tmp/code-server_4.102.1_amd64.deb "https://github.com/coder/code-server/releases/download/v4.102.1/code-server_4.102.1_amd64.deb"
-COPY start_server.sh /usr/bin/entrypoint.sh
-RUN chmod a+x /usr/bin/entrypoint.sh \
+RUN wget -O /tmp/code-server_4.102.1_amd64.deb "https://github.com/coder/code-server/releases/download/v4.102.1/code-server_4.102.1_amd64.deb" \
  && dpkg -i /tmp/code-server_4.102.1_amd64.deb \
  && rm /tmp/code-server_4.102.1_amd64.deb
 
@@ -94,9 +93,10 @@ ENV SHELL=/bin/bash
 
 EXPOSE 7860
 
-USER 1001
+USER 1000
 ENV USER=${USERNAME}
-WORKDIR /home/ubuntu
+ENV HOME=/home/${USERNAME}
+WORKDIR /home/${USERNAME}
 
 # Clone the coder repository and install extensions
 RUN git clone https://github.com/fenghaitao/coder.git /tmp/coder \
@@ -125,4 +125,4 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
     && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local
 
 
-ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
+ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
