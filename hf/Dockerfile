@@ -16,6 +16,7 @@ RUN apt-get update && \
         wget \
         vim \
         git \
+        less \
         build-essential \
         cmake \
         python3 \
