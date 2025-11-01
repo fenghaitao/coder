@@ -1,2 +1,8 @@
 #!/bin/bash
-docker build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t coder:latest .
+docker build \
+  --build-arg USER_ID=$(id -u) \
+  --build-arg GROUP_ID=$(id -g) \
+  --build-arg http_proxy=$http_proxy \
+  --build-arg https_proxy=$https_proxy \
+  --build-arg no_proxy=$no_proxy \
+  -t coder:latest .
