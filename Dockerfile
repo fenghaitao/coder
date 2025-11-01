@@ -101,5 +101,7 @@ ENV USER=${USERNAME}
 ENV HOME=/nfs/site/home/${USERNAME}/coder
 WORKDIR /nfs/site/home/${USERNAME}/coder
 
+# Clone the coder repository for later use
+RUN git clone https://github.com/fenghaitao/coder.git /tmp/coder
 
 ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]

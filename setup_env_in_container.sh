@@ -9,7 +9,7 @@ echo "Setting up development environment..."
 
 # Clone the coder repository and install extensions
 echo "Installing VS Code extensions..."
-git clone https://github.com/fenghaitao/coder.git /tmp/coder
+#git clone https://github.com/fenghaitao/coder.git /tmp/coder
 code-server --install-extension /tmp/coder/vsix/github.copilot-1.325.0.vsix
 code-server --install-extension /tmp/coder/vsix/github.copilot-chat-0.27.2.vsix
 code-server --install-extension /tmp/coder/vsix/ms-python.python-2024.8.1.vsix
