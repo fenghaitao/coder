@@ -1,7 +1,9 @@
 # Use Ubuntu 24.04 as the base image
 FROM ubuntu:24.04
 
-# Define username as a build argument and environment variable
+# Accept UID/GID as build arguments with defaults
+ARG USER_ID=1001
+ARG GROUP_ID=1001
 ARG USERNAME=hfeng1
 ENV USERNAME=${USERNAME}
 
@@ -71,9 +73,10 @@ RUN python3 -m pip install wheel requests setuptools-rust setuptools --break-sys
 # Set Python 3 as default python
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
-#grant root permission to user
-RUN adduser --gecos '' --disabled-password ${USERNAME} && \
-  echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
+# Create group and user with specific UID/GID
+RUN groupadd -g ${GROUP_ID} ${USERNAME} && \
+    useradd -u ${USER_ID} -g ${GROUP_ID} -s /bin/bash -m ${USERNAME} && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
 
 # fixuid commented out - not needed for Singularity natural user mapping
 # RUN ARCH="$(dpkg --print-architecture)" && \
@@ -93,7 +96,7 @@ ENV SHELL=/bin/bash
 
 EXPOSE 7860
 
-USER ${USERNAME}
+USER ${USER_ID}:${GROUP_ID}
 ENV USER=${USERNAME}
 ENV HOME=/nfs/site/home/${USERNAME}/coder
 WORKDIR /nfs/site/home/${USERNAME}/coder
