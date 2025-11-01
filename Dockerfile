@@ -2,7 +2,7 @@
 FROM ubuntu:24.04
 
 # Define username as a build argument and environment variable
-ARG USERNAME=ubuntu
+ARG USERNAME=hfeng1
 ENV USERNAME=${USERNAME}
 
 # Set environment variables to non-interactive
@@ -57,6 +57,7 @@ RUN apt-get update && \
         gnumeric \
         xsltproc \
         libstring-crc32-perl \
+        lsof \
         && update-ca-certificates \
         && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 60 \
         && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 60
@@ -74,33 +75,37 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python
 RUN adduser --gecos '' --disabled-password ${USERNAME} && \
   echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
 
-RUN ARCH="$(dpkg --print-architecture)" && \
-    curl -fsSL "https://github.com/boxboat/fixuid/releases/download/v0.5/fixuid-0.5-linux-$ARCH.tar.gz" | tar -C /usr/local/bin -xzf - && \
-    chown root:root /usr/local/bin/fixuid && \
-    chmod 4755 /usr/local/bin/fixuid && \
-    mkdir -p /etc/fixuid && \
-    printf "user: ${USERNAME}\ngroup: ${USERNAME}\n" > /etc/fixuid/config.yml
+# fixuid commented out - not needed for Singularity natural user mapping
+# RUN ARCH="$(dpkg --print-architecture)" && \
+#     curl -fsSL "https://github.com/boxboat/fixuid/releases/download/v0.5/fixuid-0.5-linux-$ARCH.tar.gz" | tar -C /usr/local/bin -xzf - && \
+#     chown root:root /usr/local/bin/fixuid && \
+#     chmod 4755 /usr/local/bin/fixuid && \
+#     mkdir -p /etc/fixuid && \
+#     printf "user: ${USERNAME}\ngroup: ${USERNAME}\n" > /etc/fixuid/config.yml
 
 #install code-server
-RUN wget -O /tmp/code-server_4.102.1_amd64.deb "https://github.com/coder/code-server/releases/download/v4.102.1/code-server_4.102.1_amd64.deb"
-COPY entrypoint.sh /usr/bin/entrypoint.sh
-RUN chmod a+x /usr/bin/entrypoint.sh \
+RUN wget -O /tmp/code-server_4.102.1_amd64.deb "https://github.com/coder/code-server/releases/download/v4.102.1/code-server_4.102.1_amd64.deb" \
  && dpkg -i /tmp/code-server_4.102.1_amd64.deb \
  && rm /tmp/code-server_4.102.1_amd64.deb
 
 # Set shell environment
 ENV SHELL=/bin/bash
 
-EXPOSE 8080
+EXPOSE 7860
 
-#install extension for code-server
-COPY vsix/*.vsix /tmp/vsix/
-RUN code-server --install-extension /tmp/vsix/github.copilot-1.325.0.vsix \
- && code-server --install-extension /tmp/vsix/github.copilot-chat-0.27.2.vsix \
- && code-server --install-extension /tmp/vsix/ms-python.python-2024.8.1.vsix \
- && code-server --install-extension /tmp/vsix/ms-vscode.cpptools-1.7.1.vsix \
- && code-server --install-extension /tmp/vsix/ms-vscode.cpptools-extension-pack-1.3.1.vsix \
- && rm -rf /tmp/vsix
+USER ${USERNAME}
+ENV USER=${USERNAME}
+ENV HOME=/nfs/site/home/${USERNAME}/coder
+WORKDIR /nfs/site/home/${USERNAME}/coder
+
+# Clone the coder repository and install extensions
+RUN git clone https://github.com/fenghaitao/coder.git /tmp/coder \
+ && code-server --install-extension /tmp/coder/vsix/github.copilot-1.325.0.vsix \
+ && code-server --install-extension /tmp/coder/vsix/github.copilot-chat-0.27.2.vsix \
+ && code-server --install-extension /tmp/coder/vsix/ms-python.python-2024.8.1.vsix \
+ && code-server --install-extension /tmp/coder/vsix/ms-vscode.cpptools-1.7.1.vsix \
+ && code-server --install-extension /tmp/coder/vsix/ms-vscode.cpptools-extension-pack-1.3.1.vsix \
+ && rm -rf /tmp/coder
 
 # Install nvm (Node Version Manager)
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
@@ -115,12 +120,12 @@ RUN bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM
 
 # Install uv (Python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
-    && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> /home/${USERNAME}/.bashrc \
-    && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> /home/${USERNAME}/.profile \
-    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.cargo
+    && echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/${USERNAME}/.bashrc \
+    && echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/${USERNAME}/.profile \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local
 
-USER 1001
-ENV USER=${USERNAME}
-WORKDIR /home/ubuntu
+# Install Atlassian CLI (acli)
+RUN curl -LO "https://acli.atlassian.com/linux/latest/acli_linux_amd64/acli" \
+    && chmod +x acli
 
-ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "--auth", "none", "."]
+ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
