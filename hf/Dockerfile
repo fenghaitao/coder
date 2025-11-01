@@ -124,5 +124,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
     && echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/${USERNAME}/.profile \
     && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local
 
+# Install Atlassian CLI (acli)
+RUN curl -LO "https://acli.atlassian.com/linux/latest/acli_linux_amd64/acli" \
+    && chmod +x acli
+
 
 ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
