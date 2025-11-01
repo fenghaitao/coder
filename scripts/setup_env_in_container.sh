@@ -7,14 +7,13 @@ set -e  # Exit on any error
 
 echo "Setting up development environment..."
 
-# Clone the coder repository and install extensions
+# Install VS Code extensions from local vsix files
 echo "Installing VS Code extensions..."
-#git clone https://github.com/fenghaitao/coder.git /tmp/coder
-code-server --install-extension /tmp/coder/vsix/github.copilot-1.325.0.vsix
-code-server --install-extension /tmp/coder/vsix/github.copilot-chat-0.27.2.vsix
-code-server --install-extension /tmp/coder/vsix/ms-python.python-2024.8.1.vsix
-code-server --install-extension /tmp/coder/vsix/ms-vscode.cpptools-1.7.1.vsix
-code-server --install-extension /tmp/coder/vsix/ms-vscode.cpptools-extension-pack-1.3.1.vsix
+code-server --install-extension ./vsix/github.copilot-1.325.0.vsix
+code-server --install-extension ./vsix/github.copilot-chat-0.27.2.vsix
+code-server --install-extension ./vsix/ms-python.python-2024.8.1.vsix
+code-server --install-extension ./vsix/ms-vscode.cpptools-1.7.1.vsix
+code-server --install-extension ./vsix/ms-vscode.cpptools-extension-pack-1.3.1.vsix
 
 # Install nvm (Node Version Manager)
 echo "Installing Node Version Manager (nvm)..."
