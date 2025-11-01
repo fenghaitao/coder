@@ -23,7 +23,6 @@ fi
 singularity run \
     --home "$NEW_HOME" \
     --bind /nfs:/nfs \
-    --bind /usr/intel:/usr/intel \
     --bind /var/tmp:/var/tmp \
     --bind /tmp:/tmp \
     --bind /opt:/opt \
