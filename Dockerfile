@@ -95,7 +95,8 @@ RUN wget -O /tmp/code-server_4.102.1_amd64.deb "https://github.com/coder/code-se
 # Set shell environment
 ENV SHELL=/bin/bash
 
-EXPOSE 7860
+ENV PORT=7860
+EXPOSE ${PORT}
 
 USER ${USER_ID}:${GROUP_ID}
 ENV USER=${USERNAME}
@@ -105,4 +106,4 @@ WORKDIR /nfs/site/home/${USERNAME}/coder
 # Clone the coder repository to HOME
 RUN git clone https://github.com/fenghaitao/coder.git ${HOME}
 
-ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
+ENTRYPOINT ["dumb-init", "/bin/bash", "-c", "exec /usr/bin/code-server --bind-addr 0.0.0.0:${PORT} --auth none ."]
