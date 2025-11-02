@@ -125,9 +125,11 @@ Sets up the development environment inside the container.
 - Installs Python package manager (uv)
 - Installs Atlassian CLI
 
+**Note:** This script only needs to be run once during initial setup.
+
 **Usage:**
 ```bash
-# Run inside the container
+# Run inside the container (only needed once)
 ./scripts/setup_env_in_container.sh
 ```
 
