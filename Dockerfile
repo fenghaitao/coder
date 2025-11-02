@@ -104,6 +104,6 @@ ENV HOME=/nfs/site/home/${USERNAME}/coder
 WORKDIR /nfs/site/home/${USERNAME}/coder
 
 # Clone the coder repository to HOME
-RUN git clone https://github.com/fenghaitao/coder.git ${HOME}
+# RUN git clone https://github.com/fenghaitao/coder.git ${HOME}
 
 ENTRYPOINT ["dumb-init", "/bin/bash", "-c", "exec /usr/bin/code-server --bind-addr 0.0.0.0:${PORT} --auth none ."]

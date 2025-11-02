@@ -10,6 +10,15 @@ The environment includes:
 - Atlassian CLI for project management
 - Support for both Docker and Singularity containers
 
+## Initial Setup
+
+First, clone this repository:
+
+```bash
+git clone https://github.com/fenghaitao/coder /nfs/site/home/$(whoami)/coder
+cd /nfs/site/home/$(whoami)/coder
+```
+
 ## Quick Start
 
 ### Option 1: Docker (Recommended for local development)

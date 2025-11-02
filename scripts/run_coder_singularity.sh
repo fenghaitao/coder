@@ -2,8 +2,8 @@
 
 # Script to run the Singularity container with HOME environment reset
 # Usage: ./run_coder_singularity.sh [new_home_path]
-#        If no path provided, defaults to /nfs/site/home/$(whoami)
-# To use a different port: PORT=8080 ./run_coder_singularity.sh
+#        If no path provided, defaults to /nfs/site/home/$(whoami)/coder
+# To use a different port: PORT=8080 ./scripts/run_coder_singularity.sh
 
 SINGULARITY_IMAGE="./coder.sif"
 DEFAULT_HOME="/nfs/site/home/$(whoami)/coder"
