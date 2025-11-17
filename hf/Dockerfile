@@ -86,9 +86,9 @@ RUN echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
 #     printf "user: ${USERNAME}\ngroup: ${USERNAME}\n" > /etc/fixuid/config.yml
 
 #install code-server
-RUN wget -O /tmp/code-server_4.102.1_amd64.deb "https://github.com/coder/code-server/releases/download/v4.102.1/code-server_4.102.1_amd64.deb" \
- && dpkg -i /tmp/code-server_4.102.1_amd64.deb \
- && rm /tmp/code-server_4.102.1_amd64.deb
+RUN wget -O /tmp/code-server_4.105.1_amd64.deb "https://github.com/coder/code-server/releases/download/v4.105.1/code-server_4.105.1_amd64.deb" \
+ && dpkg -i /tmp/code-server_4.105.1_amd64.deb \
+ && rm /tmp/code-server_4.105.1_amd64.deb
 
 # Set shell environment
 ENV SHELL=/bin/bash
