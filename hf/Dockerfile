@@ -100,15 +100,6 @@ ENV USER=${USERNAME}
 ENV HOME=/home/${USERNAME}
 WORKDIR /home/${USERNAME}
 
-# Clone the coder repository and install extensions
-RUN git clone https://github.com/fenghaitao/coder.git /tmp/coder \
- && code-server --install-extension /tmp/coder/vsix/github.copilot-1.325.0.vsix \
- && code-server --install-extension /tmp/coder/vsix/github.copilot-chat-0.27.2.vsix \
- && code-server --install-extension /tmp/coder/vsix/ms-python.python-2024.8.1.vsix \
- && code-server --install-extension /tmp/coder/vsix/ms-vscode.cpptools-1.7.1.vsix \
- && code-server --install-extension /tmp/coder/vsix/ms-vscode.cpptools-extension-pack-1.3.1.vsix \
- && rm -rf /tmp/coder
-
 # Install nvm (Node Version Manager)
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
     && echo 'export NVM_DIR="$HOME/.nvm"' >> $HOME/.bashrc \
@@ -117,7 +108,7 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | b
     && chown -R ${USERNAME}:${USERNAME} $HOME/.nvm $HOME/.bashrc $HOME/.profile
 
 # Install Node.js using nvm
-RUN bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install node' \
+RUN bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install 22.20.0 && nvm use 22.20.0 && nvm alias default 22.20.0' \
     && chown -R ${USERNAME}:${USERNAME} $HOME/.nvm
 
 # Install uv (Python package manager)
@@ -129,5 +120,23 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
 # Install Atlassian CLI (acli)
 RUN curl -LO "https://acli.atlassian.com/linux/latest/acli_linux_amd64/acli" \
     && chmod +x acli
+
+# Clone the coder repository and install extensions
+RUN git clone https://github.com/fenghaitao/coder.git $HOME/coder \
+ && code-server --install-extension $HOME/coder/vsix/ms-python.python-2024.8.1.vsix \
+ && code-server --install-extension $HOME/coder/vsix/ms-vscode.cpptools-1.7.1.vsix \
+ && code-server --install-extension $HOME/coder/vsix/ms-vscode.cpptools-extension-pack-1.3.1.vsix \
+ && chown -R ${USERNAME}:${USERNAME} $HOME/coder
+
+#&& code-server --install-extension $HOME/coder/vsix/github.copilot-1.325.0.vsix \
+#&& code-server --install-extension $HOME/coder/vsix/github.copilot-chat-0.27.2.vsix \
+
+# Clone vscode-copilot-chat repository and build VSIX
+RUN git clone https://github.com/fenghaitao/vscode-copilot-chat.git $HOME/vscode-copilot-chat \
+    && cd $HOME/vscode-copilot-chat \
+    && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm install' \
+    && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm run compile' \
+    && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm run package -- --allow-package-secrets sendgrid' \
+    && chown -R ${USERNAME}:${USERNAME} $HOME/vscode-copilot-chat
 
 ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
