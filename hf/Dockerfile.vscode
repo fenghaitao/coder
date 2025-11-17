@@ -69,6 +69,11 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python
 # Grant root permission to existing ubuntu user
 RUN echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
 
+# Install code-server
+RUN wget -O /tmp/code-server_4.105.1_amd64.deb "https://github.com/coder/code-server/releases/download/v4.105.1/code-server_4.105.1_amd64.deb" \
+ && dpkg -i /tmp/code-server_4.105.1_amd64.deb \
+ && rm /tmp/code-server_4.105.1_amd64.deb
+
 # Set shell environment
 ENV SHELL=/bin/bash
 
@@ -99,11 +104,6 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
 # Install Atlassian CLI (acli)
 RUN curl -LO "https://acli.atlassian.com/linux/latest/acli_linux_amd64/acli" \
     && chmod +x acli
-
-# Install code-server
-RUN wget -O /tmp/code-server_4.105.1_amd64.deb "https://github.com/coder/code-server/releases/download/v4.105.1/code-server_4.105.1_amd64.deb" \
- && dpkg -i /tmp/code-server_4.105.1_amd64.deb \
- && rm /tmp/code-server_4.105.1_amd64.deb
 
 # Clone the coder repository and install extensions
 RUN git clone https://github.com/fenghaitao/coder.git $HOME/coder \
