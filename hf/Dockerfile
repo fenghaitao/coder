@@ -126,10 +126,9 @@ RUN git clone https://github.com/fenghaitao/coder.git $HOME/coder \
  && code-server --install-extension $HOME/coder/vsix/ms-python.python-2024.8.1.vsix \
  && code-server --install-extension $HOME/coder/vsix/ms-vscode.cpptools-1.7.1.vsix \
  && code-server --install-extension $HOME/coder/vsix/ms-vscode.cpptools-extension-pack-1.3.1.vsix \
+ && code-server --install-extension $HOME/coder/vsix/github.copilot-1.325.0.vsix \
+ && code-server --install-extension $HOME/coder/vsix/github.copilot-chat-0.27.2.vsix \
  && chown -R ${USERNAME}:${USERNAME} $HOME/coder
-
-#&& code-server --install-extension $HOME/coder/vsix/github.copilot-1.325.0.vsix \
-#&& code-server --install-extension $HOME/coder/vsix/github.copilot-chat-0.27.2.vsix \
 
 # Clone vscode-copilot-chat repository and build VSIX
 RUN git clone https://github.com/fenghaitao/vscode-copilot-chat.git $HOME/vscode-copilot-chat \
@@ -138,5 +137,9 @@ RUN git clone https://github.com/fenghaitao/vscode-copilot-chat.git $HOME/vscode
     && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm run compile' \
     && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm run package -- --allow-package-secrets sendgrid' \
     && chown -R ${USERNAME}:${USERNAME} $HOME/vscode-copilot-chat
+
+# Configure git globally
+RUN git config --global user.email "haitao.feng@gmail.com" && \
+    git config --global user.name "Haitao Feng"
 
 ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
