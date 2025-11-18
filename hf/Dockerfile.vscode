@@ -95,6 +95,39 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | b
 RUN bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install 22.20.0 && nvm use 22.20.0 && nvm alias default 22.20.0' \
     && chown -R ${USERNAME}:${USERNAME} $HOME/.nvm
 
+# Configure git globally
+RUN git config --global user.email "haitao.feng@gmail.com" && \
+    git config --global user.name "Haitao Feng"
+
+# Clone and build VS Code first to catch any missing dependencies early
+RUN git clone https://github.com/microsoft/vscode.git $HOME/vscode \
+    && chown -R ${USERNAME}:${USERNAME} $HOME/vscode
+
+WORKDIR $HOME/vscode
+RUN bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm install -g node-gyp' \
+    && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm ci' \
+    && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm run download-builtin-extensions' \
+    && chown -R ${USERNAME}:${USERNAME} $HOME/vscode
+
+#Below does not work, we have to reply on scripts/code-server.sh to compile in the hf
+#RUN bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && timeout 360 npm run watch'
+#&& bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm run compile' \
+
+# Now install other tools and extensions
+WORKDIR /home/${USERNAME}
+
+# Create startup script
+RUN echo '#!/bin/bash' > $HOME/start-vscode-server.sh && \
+    echo 'export NVM_DIR="$HOME/.nvm"' >> $HOME/start-vscode-server.sh && \
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $HOME/start-vscode-server.sh && \
+    echo 'export VSCODE_SERVER_PORT=7860' >> $HOME/start-vscode-server.sh && \
+    echo 'cd $HOME/vscode' >> $HOME/start-vscode-server.sh && \
+    echo 'exec bash scripts/code-server.sh --host 0.0.0.0 --port 7860 --without-connection-token --accept-server-license-terms "$@"' >> $HOME/start-vscode-server.sh && \
+    chmod +x $HOME/start-vscode-server.sh && \
+    chown ${USERNAME}:${USERNAME} $HOME/start-vscode-server.sh
+
+WORKDIR /home/${USERNAME}
+
 # Install uv (Python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
     && echo 'export PATH="$HOME/.local/bin:$PATH"' >> $HOME/.bashrc \
@@ -114,10 +147,6 @@ RUN git clone https://github.com/fenghaitao/coder.git $HOME/coder \
  && code-server --install-extension $HOME/coder/vsix/github.copilot-chat-0.27.2.vsix \
  && chown -R ${USERNAME}:${USERNAME} $HOME/coder
 
-# Configure git globally
-RUN git config --global user.email "haitao.feng@gmail.com" && \
-    git config --global user.name "Haitao Feng"
-
 # Clone vscode-copilot-chat repository and build VSIX
 RUN git clone https://github.com/fenghaitao/vscode-copilot-chat.git $HOME/vscode-copilot-chat \
     && cd $HOME/vscode-copilot-chat \
@@ -126,32 +155,6 @@ RUN git clone https://github.com/fenghaitao/vscode-copilot-chat.git $HOME/vscode
     && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm run package -- --allow-package-secrets sendgrid' \
     && chown -R ${USERNAME}:${USERNAME} $HOME/vscode-copilot-chat
 
-# Clone and build VS Code first to catch any missing dependencies early
-RUN git clone https://github.com/microsoft/vscode.git $HOME/vscode \
-    && chown -R ${USERNAME}:${USERNAME} $HOME/vscode
+ENTRYPOINT ["dumb-init", "/home/ubuntu/start-vscode-server.sh", "."]
 
-WORKDIR $HOME/vscode
-RUN bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm install -g node-gyp' \
-    && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm ci' \
-    && bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm run download-builtin-extensions' \
-    && chown -R ${USERNAME}:${USERNAME} $HOME/vscode
-
-#&& bash -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && npm run compile' \
-
-# Now install other tools and extensions
-WORKDIR /home/${USERNAME}
-
-# Create startup script
-RUN echo '#!/bin/bash' > $HOME/start-vscode-server.sh && \
-    echo 'export NVM_DIR="$HOME/.nvm"' >> $HOME/start-vscode-server.sh && \
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $HOME/start-vscode-server.sh && \
-    echo 'export VSCODE_SERVER_PORT=7860' >> $HOME/start-vscode-server.sh && \
-    echo 'cd $HOME/vscode' >> $HOME/start-vscode-server.sh && \
-    echo 'exec bash scripts/code-server.sh --host 0.0.0.0 --port 7860 --without-connection-token --accept-server-license-terms "$@"' >> $HOME/start-vscode-server.sh && \
-    chmod +x $HOME/start-vscode-server.sh && \
-    chown ${USERNAME}:${USERNAME} $HOME/start-vscode-server.sh
-
-WORKDIR /home/${USERNAME}
-
-# ENTRYPOINT ["dumb-init", "/home/ubuntu/start-vscode-server.sh", "."]
-ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
+#ENTRYPOINT ["dumb-init", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:7860", "--auth", "none", "."]
