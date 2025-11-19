@@ -1,0 +1,6 @@
+[submodule "vscode"]
+	path = vscode
+	url = https://github.com/fenghaitao/vscode.git
+[submodule "vscode-copilot-chat"]
+	path = vscode-copilot-chat
+	url = https://github.com/fenghaitao/vscode-copilot-chat.git

@@ -1,2 +1,21 @@
 # Singularity Image Format files
 *.sif
+
+# User-specific files
+.bash_history
+.bashrc
+.config/
+.gitconfig
+.kiro/
+.lesshst
+.local/
+.npm/
+.nvm/
+.pki/
+.profile
+.vim/
+.viminfo
+.vscode-oss-dev/
+.vscode-server-oss-dev/
+.zshrc
+acli
