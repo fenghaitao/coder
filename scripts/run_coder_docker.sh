@@ -6,6 +6,7 @@
 
 # Set PORT environment variable (default 7860)
 PORT="${PORT:-7860}"
+CODE_SERVER_PORT="${CODE_SERVER_PORT:-9888}"
 
 echo "Running Docker container on port $PORT"
 
@@ -16,6 +17,7 @@ docker run \
   -e no_proxy=$no_proxy \
   -e PORT=$PORT \
   -p $PORT:$PORT \
+  -p $CODE_SERVER_PORT:$CODE_SERVER_PORT \
   -v /nfs/site/home/hfeng1:/nfs/site/home/hfeng1 \
   -v /nfs:/nfs \
   -v /usr/intel:/usr/intel \
