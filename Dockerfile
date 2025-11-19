@@ -61,6 +61,40 @@ RUN apt-get update && \
         xsltproc \
         libstring-crc32-perl \
         lsof \
+        pkg-config \
+        libx11-dev \
+        libxkbfile-dev \
+        libsecret-1-dev \
+        libkrb5-dev \
+        libnss3-dev \
+        libatk1.0-dev \
+        libatk-bridge2.0-dev \
+        libcups2-dev \
+        libdrm-dev \
+        libgtk-3-dev \
+        libgbm-dev \
+        libasound2-dev \
+        libxshmfence-dev \
+        libglib2.0-dev \
+        libxext-dev \
+        libxfixes-dev \
+        libxi-dev \
+        libxrandr-dev \
+        libxrender-dev \
+        libxss-dev \
+        libxtst-dev \
+        libpango1.0-dev \
+        libcairo2-dev \
+        libdbus-1-dev \
+        libgdk-pixbuf2.0-dev \
+        libnotify-dev \
+        libxcomposite-dev \
+        libxcursor-dev \
+        libxdamage-dev \
+        libfontconfig1-dev \
+        libxinerama-dev \
+        libudev-dev \
+        libexpat1-dev \
         && update-ca-certificates \
         && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 60 \
         && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 60
