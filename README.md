@@ -12,12 +12,15 @@ The environment includes:
 
 ## Initial Setup
 
-First, clone this repository:
+First, clone this repository and initialize submodules:
 
 ```bash
 git clone https://github.com/fenghaitao/coder /nfs/site/home/$(whoami)/coder
 cd /nfs/site/home/$(whoami)/coder
+git submodule update --init --recursive
 ```
+
+This will checkout the vscode and vscode-copilot-chat submodules required for the development environment.
 
 ## Quick Start
 
