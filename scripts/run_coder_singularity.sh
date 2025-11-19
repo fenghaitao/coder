@@ -12,7 +12,16 @@ NEW_HOME="${1:-$DEFAULT_HOME}"
 # Set PORT environment variable (default 7860)
 export SINGULARITYENV_PORT="${PORT:-7860}"
 
+# Set DISPLAY environment variable for X11 forwarding
+export SINGULARITYENV_DISPLAY="${DISPLAY}"
+
+# Grant X11 access (allow connections from localhost)
+if [ -n "$DISPLAY" ]; then
+    xhost +local: 2>/dev/null || echo "Warning: xhost not available, X11 forwarding may not work"
+fi
+
 echo "Running Singularity container with HOME=$NEW_HOME on port $SINGULARITYENV_PORT"
+echo "DISPLAY is set to: $DISPLAY"
 
 # Check if Singularity image exists
 if [ ! -f "$SINGULARITY_IMAGE" ]; then
@@ -30,4 +39,5 @@ singularity run \
     --bind /var/tmp:/var/tmp \
     --bind /tmp:/tmp \
     --bind /opt:/opt \
+    --bind /tmp/.X11-unix:/tmp/.X11-unix \
     "$SINGULARITY_IMAGE"
