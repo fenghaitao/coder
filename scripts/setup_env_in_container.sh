@@ -71,5 +71,10 @@ npm run compile
 npm run package -- --allow-package-secrets sendgrid
 npx playwright install chromium
 
+# Setup Kiro URL handler
+echo "Setting up Kiro URL handler..."
+cd $HOME/coder
+bash scripts/setup-kiro-xdg.sh
+
 echo "Development environment setup complete!"
 echo "Please run 'source ~/.bashrc' or restart your shell to use the new tools."
