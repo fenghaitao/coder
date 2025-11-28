@@ -121,8 +121,8 @@ RUN groupadd -g ${GROUP_ID} ${USERNAME} && \
 #     mkdir -p /etc/fixuid && \
 #     printf "user: ${USERNAME}\ngroup: ${USERNAME}\n" > /etc/fixuid/config.yml
 
-# Install dependencies for Chrome and Kiro
-RUN apt-get install -y xdg-utils fonts-liberation exo-utils
+# Install dependencies for Chrome, Kiro, and FUSE
+RUN apt-get install -y xdg-utils fonts-liberation exo-utils libfuse-dev
 
 # Install Google Chrome
 RUN wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" \
@@ -131,6 +131,8 @@ RUN wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/l
 #install code-server
 RUN wget -O /tmp/code-server_4.106.2_amd64.deb "https://github.com/coder/code-server/releases/download/v4.106.2/code-server_4.106.2_amd64.deb" \
  && dpkg -i /tmp/code-server_4.106.2_amd64.deb
+
+RUN apt-get install -y fuse3
 
 # Set shell environment
 ENV SHELL=/bin/bash
