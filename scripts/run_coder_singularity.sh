@@ -78,6 +78,7 @@ if [ "$SHELL_MODE" = true ]; then
         --bind /var/tmp:/var/tmp \
         --bind /tmp:/tmp \
         --bind /tmp/.X11-unix:/tmp/.X11-unix \
+        --bind /dev/fuse:/dev/fuse \
         "$SINGULARITY_IMAGE"
 else
     echo "Running Singularity container with HOME=$NEW_HOME on port $SINGULARITYENV_PORT"
@@ -92,6 +93,7 @@ else
         --bind /var/tmp:/var/tmp \
         --bind /tmp:/tmp \
         --bind /tmp/.X11-unix:/tmp/.X11-unix \
+        --bind /dev/fuse:/dev/fuse \
         "$SINGULARITY_IMAGE"
 fi
 
