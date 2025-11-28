@@ -121,10 +121,16 @@ RUN groupadd -g ${GROUP_ID} ${USERNAME} && \
 #     mkdir -p /etc/fixuid && \
 #     printf "user: ${USERNAME}\ngroup: ${USERNAME}\n" > /etc/fixuid/config.yml
 
+# Install dependencies for Chrome
+RUN apt-get install -y xdg-utils fonts-liberation
+
+# Install Google Chrome
+RUN wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" \
+ && dpkg -i /tmp/google-chrome-stable_current_amd64.deb
+
 #install code-server
-RUN wget -O /tmp/code-server_4.102.1_amd64.deb "https://github.com/coder/code-server/releases/download/v4.102.1/code-server_4.102.1_amd64.deb" \
- && dpkg -i /tmp/code-server_4.102.1_amd64.deb \
- && rm /tmp/code-server_4.102.1_amd64.deb
+RUN wget -O /tmp/code-server_4.106.2_amd64.deb "https://github.com/coder/code-server/releases/download/v4.106.2/code-server_4.106.2_amd64.deb" \
+ && dpkg -i /tmp/code-server_4.106.2_amd64.deb
 
 # Set shell environment
 ENV SHELL=/bin/bash
