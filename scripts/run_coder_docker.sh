@@ -20,6 +20,7 @@ docker run \
   --user $(id -u):$(id -g) \
   --security-opt seccomp=unconfined \
   --cap-add=SYS_ADMIN \
+  --device /dev/fuse \
   --ipc=host \
   -e http_proxy=$http_proxy \
   -e https_proxy=$https_proxy \
