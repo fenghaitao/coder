@@ -121,8 +121,8 @@ RUN groupadd -g ${GROUP_ID} ${USERNAME} && \
 #     mkdir -p /etc/fixuid && \
 #     printf "user: ${USERNAME}\ngroup: ${USERNAME}\n" > /etc/fixuid/config.yml
 
-# Install dependencies for Chrome
-RUN apt-get install -y xdg-utils fonts-liberation
+# Install dependencies for Chrome and Kiro
+RUN apt-get install -y xdg-utils fonts-liberation exo-utils
 
 # Install Google Chrome
 RUN wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" \
@@ -131,13 +131,6 @@ RUN wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/l
 #install code-server
 RUN wget -O /tmp/code-server_4.106.2_amd64.deb "https://github.com/coder/code-server/releases/download/v4.106.2/code-server_4.106.2_amd64.deb" \
  && dpkg -i /tmp/code-server_4.106.2_amd64.deb
-
-# Install exo-open to open Kiro
-RUN apt-get install -y exo-utils
-
-# Copy Kiro XDG setup script
-COPY setup-kiro-xdg.sh /usr/local/bin/setup-kiro-xdg.sh
-RUN chmod +x /usr/local/bin/setup-kiro-xdg.sh
 
 # Set shell environment
 ENV SHELL=/bin/bash
@@ -150,8 +143,5 @@ USER ${USER_ID}:${GROUP_ID}
 ENV USER=${USERNAME}
 ENV HOME=/nfs/site/home/${USERNAME}/coder
 WORKDIR /nfs/site/home/${USERNAME}/coder
-
-# Run Kiro XDG setup script as user
-RUN /usr/local/bin/setup-kiro-xdg.sh
 
 ENTRYPOINT ["dumb-init", "/bin/bash", "-c", "exec /usr/bin/code-server --bind-addr 0.0.0.0:${PORT} --auth none ."]

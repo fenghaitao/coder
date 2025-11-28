@@ -2,8 +2,10 @@
 *.sif
 
 # User-specific files
+.aws/
 .bash_history
 .bashrc
+.cache/
 .config/
 .gitconfig
 .kiro/
@@ -19,3 +21,5 @@
 .vscode-server-oss-dev/
 .zshrc
 acli
+Kiro/
+package-lock.json
