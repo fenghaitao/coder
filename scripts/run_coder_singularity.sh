@@ -75,6 +75,7 @@ if [ "$SHELL_MODE" = true ]; then
     singularity shell \
         --home "$NEW_HOME" \
         --bind /nfs:/nfs \
+        --bind /var/lib/ca-certificates:/var/lib/ca-certificates \
         --bind /var/tmp:/var/tmp \
         --bind /tmp:/tmp \
         --bind /tmp/.X11-unix:/tmp/.X11-unix \
@@ -90,6 +91,7 @@ else
     singularity run \
         --home "$NEW_HOME" \
         --bind /nfs:/nfs \
+        --bind /var/lib/ca-certificates:/var/lib/ca-certificates \
         --bind /var/tmp:/var/tmp \
         --bind /tmp:/tmp \
         --bind /tmp/.X11-unix:/tmp/.X11-unix \
