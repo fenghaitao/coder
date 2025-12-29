@@ -73,7 +73,7 @@ npx playwright install chromium
 
 # Setup Kiro URL handler
 echo "Setting up Kiro URL handler..."
-cd $HOME/coder
+cd $HOME
 bash scripts/setup-kiro-xdg.sh
 
 echo "Development environment setup complete!"
