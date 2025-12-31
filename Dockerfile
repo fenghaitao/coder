@@ -134,6 +134,16 @@ RUN wget -O /tmp/code-server_4.106.2_amd64.deb "https://github.com/coder/code-se
 
 RUN apt-get install -y fuse3
 
+RUN apt-get install -y desktop-file-utils
+
+# Download and install the Intel certificate
+#RUN wget http://certificates.intel.com/repository/certificates/IntelSHA256RootCA-Base64.crt \
+#    && mv IntelSHA256RootCA-Base64.crt /usr/local/share/ca-certificates/
+#
+#RUN update-ca-certificates --fresh
+#
+#ENV REQUESTS_CA_BUNDLE /etc/ssl/certs/ca-certificates.crt
+
 # Set shell environment
 ENV SHELL=/bin/bash
 ENV BROWSER=/usr/bin/google-chrome
