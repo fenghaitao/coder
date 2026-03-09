@@ -7,7 +7,7 @@
 # To use a different port: PORT=8080 ./scripts/run_coder_singularity.sh
 
 SINGULARITY_IMAGE="./coder.sif"
-DEFAULT_HOME="/nfs/site/home/$(whoami)/coder"
+DEFAULT_HOME="$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")/workspace"
 
 # Parse command line arguments
 SHELL_MODE=false
